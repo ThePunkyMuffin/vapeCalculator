@@ -9,6 +9,7 @@ import java.awt.Window;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.json.JSONException;
 
@@ -17,7 +18,7 @@ import org.json.JSONException;
  * @author PC1
  */
 public class NewBatteryPanel extends javax.swing.JFrame {
-
+public Battery newBattery = new Battery();
     /**
      * Creates new form NewBatteryPanel
      */
@@ -147,9 +148,6 @@ public class NewBatteryPanel extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Float Amp, Volt;
-
-        String getCompanyName = jTextField_BatteryCompanyName.getText();
-        String getBatteryName = jTextField_BatteryName.getText();
         String getAmp = jTextField_BatteryMaxAmp.getText();
         if (getAmp.isEmpty()) {
             Amp = 0.0f;
@@ -162,12 +160,15 @@ public class NewBatteryPanel extends javax.swing.JFrame {
         } else {
             Volt = Float.parseFloat(getVolt);
         }
-        Battery newBattery = new Battery(getCompanyName, getBatteryName, Amp, Volt);
-        try {
-            newBattery.showBattery();
-        } catch (JSONException ex) {
-            Logger.getLogger(NewBatteryPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        newBattery.setCompanyName(jTextField_BatteryCompanyName.getText());
+        newBattery.setBatteryModel(jTextField_BatteryName.getText());
+        newBattery.setMaxAmp(Amp);
+        newBattery.setVolt(Volt);
+        JOptionPane.showMessageDialog(jPanel1," New battery added ");
+        JOptionPane.showMessageDialog(jPanel1,"Company name: "+newBattery.getCompanyName());
+        JComponent comp = (JComponent) evt.getSource();
+        Window win = SwingUtilities.getWindowAncestor(comp);
+        win.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

@@ -13,7 +13,6 @@ import javax.swing.JOptionPane;
  * @author robert
  */
 public class mainWindow extends javax.swing.JFrame {
-
     /**
      * Creates new form mainWindow
      */
@@ -159,7 +158,12 @@ public class mainWindow extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Result"));
 
-        jComboBox_BatteryChooser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox_BatteryChooser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
+        jComboBox_BatteryChooser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox_BatteryChooserActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("Choose battery");
 
@@ -283,7 +287,12 @@ public class mainWindow extends javax.swing.JFrame {
         NewBatteryPanel addBatteryPanel = new NewBatteryPanel(); 
         addBatteryPanel.setVisible(true);
         addBatteryPanel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        jComboBox_BatteryChooser.addItem(addBatteryPanel.newBattery.getCompanyName());
     }//GEN-LAST:event_jButton_AddBatteryActionPerformed
+
+    private void jComboBox_BatteryChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_BatteryChooserActionPerformed
+
+    }//GEN-LAST:event_jComboBox_BatteryChooserActionPerformed
 
     /**
      * @param args the command line arguments
