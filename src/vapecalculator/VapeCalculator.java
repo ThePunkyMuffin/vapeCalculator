@@ -17,7 +17,6 @@ public class VapeCalculator {
     public static void main(String[] args) {
         mainWindow mainView = new mainWindow();
         mainView.setVisible(true);
-
     }
 
 }

@@ -6,19 +6,17 @@
 package vapecalculator;
 
 import java.awt.Window;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import org.json.JSONException;
 
 /**
  *
  * @author PC1
  */
 public class NewBatteryPanel extends javax.swing.JFrame {
-public Battery newBattery = new Battery();
+
+    public Battery newBattery = new Battery();
+
     /**
      * Creates new form NewBatteryPanel
      */
@@ -164,8 +162,6 @@ public Battery newBattery = new Battery();
         newBattery.setBatteryModel(jTextField_BatteryName.getText());
         newBattery.setMaxAmp(Amp);
         newBattery.setVolt(Volt);
-        JOptionPane.showMessageDialog(jPanel1," New battery added ");
-        JOptionPane.showMessageDialog(jPanel1,"Company name: "+newBattery.getCompanyName());
         JComponent comp = (JComponent) evt.getSource();
         Window win = SwingUtilities.getWindowAncestor(comp);
         win.dispose();

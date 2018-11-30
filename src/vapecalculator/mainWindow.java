@@ -5,9 +5,13 @@
  */
 package vapecalculator;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 /**
  *
  * @author robert
@@ -17,6 +21,7 @@ public class mainWindow extends javax.swing.JFrame {
      * Creates new form mainWindow
      */
     public mainWindow() {
+        checkConnection();
         Battery myBattery = new Battery("IJOY","20700",40.0f,3.7f);
         initComponents();
         
@@ -279,21 +284,31 @@ public class mainWindow extends javax.swing.JFrame {
         jTextField_Ohm.setText(null);
         jTextField_Volts.setText(null);
         jTextField_Watt.setText(null);
-        
-        
     }//GEN-LAST:event_jButton_ResetActionPerformed
 
     private void jButton_AddBatteryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddBatteryActionPerformed
         NewBatteryPanel addBatteryPanel = new NewBatteryPanel(); 
         addBatteryPanel.setVisible(true);
         addBatteryPanel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        jComboBox_BatteryChooser.addItem(addBatteryPanel.newBattery.getCompanyName());
     }//GEN-LAST:event_jButton_AddBatteryActionPerformed
 
     private void jComboBox_BatteryChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_BatteryChooserActionPerformed
 
     }//GEN-LAST:event_jComboBox_BatteryChooserActionPerformed
-
+public void checkConnection(){
+        try {
+                Connection conn = null;
+    String url = "jdbc:sqlite:batteries.db";
+            conn = DriverManager.getConnection(url);
+            System.out.println("Connection to SQLite has been established.");
+        } catch (SQLException ex) {
+            Logger.getLogger(mainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+}
+public void checkConnection(NewBatteryPanel newBatterypanel){
+    
+}
+        
     /**
      * @param args the command line arguments
      */

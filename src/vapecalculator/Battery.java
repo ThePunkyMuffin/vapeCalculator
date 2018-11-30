@@ -5,8 +5,6 @@
  */
 package vapecalculator;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  *
@@ -48,13 +46,5 @@ public class Battery {
     }
     public Float getVolt(){
         return this.volt;
-    }
-    public void showBattery () throws JSONException{
-        JSONObject obj = new JSONObject();
-        obj.put(" Company Name : ",getCompanyName());
-        obj.put(" Battery Model : ",getBatteryModel());
-        obj.put(" Max Amp : ", getMaxAmp());
-        obj.put(" Volt : ", getVolt());
-        System.out.println(obj);
     }
 }
