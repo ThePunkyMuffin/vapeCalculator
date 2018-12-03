@@ -6,6 +6,13 @@
 package vapecalculator;
 
 import java.awt.Window;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
@@ -162,11 +169,31 @@ public class NewBatteryPanel extends javax.swing.JFrame {
         newBattery.setBatteryModel(jTextField_BatteryName.getText());
         newBattery.setMaxAmp(Amp);
         newBattery.setVolt(Volt);
+        sendToDatabase(newBattery);
         JComponent comp = (JComponent) evt.getSource();
         Window win = SwingUtilities.getWindowAncestor(comp);
         win.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
-
+public void sendToDatabase(Battery insertBattery){
+    try {
+                Connection conn = null;
+    String url = "jdbc:sqlite:batteries.db";
+            conn = DriverManager.getConnection(url);
+          Statement stmt = conn.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS batteries ( id integer PRIMARY KEY, companyName TEXT NOT NULL, batteryType TEXT NOT NULL, batteryVolt FLOAT NOT NULL, batteryAmp FLOAT NOT NULL);";
+            stmt.execute(sql);
+            sql = "insert into batteries ( companyName, batteryType, batteryVolt, batteryAmp) VALUES (?,?,?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, insertBattery.getCompanyName());
+            pstmt.setString(2, insertBattery.getBatteryModel());
+            pstmt.setFloat(3, insertBattery.getVolt());
+            pstmt.setFloat(4,insertBattery.getMaxAmp());
+            pstmt.executeUpdate();
+            System.out.println("Update Successful");
+    } catch (SQLException ex) {
+            Logger.getLogger(mainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+}
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         JComponent comp = (JComponent) evt.getSource();
         Window win = SwingUtilities.getWindowAncestor(comp);

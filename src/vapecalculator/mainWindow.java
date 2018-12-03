@@ -7,24 +7,32 @@ package vapecalculator;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author robert
  */
 public class mainWindow extends javax.swing.JFrame {
+
     /**
      * Creates new form mainWindow
      */
     public mainWindow() {
-        checkConnection();
-        Battery myBattery = new Battery("IJOY","20700",40.0f,3.7f);
         initComponents();
-        
+        checkConnection();
+        showBatteries();
+        Battery myBattery = new Battery("IJOY", "20700", 40.0f, 3.7f);
+
     }
 
     /**
@@ -233,8 +241,8 @@ public class mainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_CalculateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CalculateActionPerformed
-            Float Amp,Volt,Ohm,Watt;
-            String getAmp = jTextField_Amp.getText();
+        Float Amp, Volt, Ohm, Watt;
+        String getAmp = jTextField_Amp.getText();
         if (getAmp.isEmpty()) {
             Amp = 0.0f;
         } else {
@@ -258,25 +266,24 @@ public class mainWindow extends javax.swing.JFrame {
         } else {
             Watt = Float.parseFloat(getWatt);
         }
-            if(Amp == 0.0f && Volt == 0.0f && Ohm == 0.0f && Watt == 0.0f ){
-                JOptionPane.showMessageDialog(jPanel_Variables, " INCORRECT VALUES "," ERROR",JOptionPane.WARNING_MESSAGE);
-            }else{
-                if(Amp != 0.0f && Volt != 0.0f){
-                    jTextField_Ohm.setText(Float.toString(Volt / Amp));
-                    jTextField_Watt.setText(Float.toString(Amp * Volt));
-                }
-                if (Ohm != 0.0f && Volt != 0.0f){
-                    jTextField_Amp.setText(Float.toString(Volt / Ohm));
-                    jTextField_Watt.setText(Float.toString(Volt*(Volt / Ohm)));
-                  }
-                if (Amp != 0.0f && Ohm != 0.0f){
-                   jTextField_Volts.setText(Float.toString(Amp*Ohm));
-                   jTextField_Watt.setText(Float.toString(Amp*(Amp*Ohm)));
-                }
-                else{
-                    JOptionPane.showMessageDialog(jPanel_Variables, "Case works");
-                }
-                }
+        if (Amp == 0.0f && Volt == 0.0f && Ohm == 0.0f && Watt == 0.0f) {
+            JOptionPane.showMessageDialog(jPanel_Variables, " INCORRECT VALUES ", " ERROR", JOptionPane.WARNING_MESSAGE);
+        } else {
+            if (Amp != 0.0f && Volt != 0.0f) {
+                jTextField_Ohm.setText(Float.toString(Volt / Amp));
+                jTextField_Watt.setText(Float.toString(Amp * Volt));
+            }
+            if (Ohm != 0.0f && Volt != 0.0f) {
+                jTextField_Amp.setText(Float.toString(Volt / Ohm));
+                jTextField_Watt.setText(Float.toString(Volt * (Volt / Ohm)));
+            }
+            if (Amp != 0.0f && Ohm != 0.0f) {
+                jTextField_Volts.setText(Float.toString(Amp * Ohm));
+                jTextField_Watt.setText(Float.toString(Amp * (Amp * Ohm)));
+            } else {
+                JOptionPane.showMessageDialog(jPanel_Variables, "Case works");
+            }
+        }
     }//GEN-LAST:event_jButton_CalculateActionPerformed
 
     private void jButton_ResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ResetActionPerformed
@@ -287,28 +294,59 @@ public class mainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_ResetActionPerformed
 
     private void jButton_AddBatteryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddBatteryActionPerformed
-        NewBatteryPanel addBatteryPanel = new NewBatteryPanel(); 
+        NewBatteryPanel addBatteryPanel = new NewBatteryPanel();
         addBatteryPanel.setVisible(true);
         addBatteryPanel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }//GEN-LAST:event_jButton_AddBatteryActionPerformed
 
     private void jComboBox_BatteryChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_BatteryChooserActionPerformed
-
     }//GEN-LAST:event_jComboBox_BatteryChooserActionPerformed
-public void checkConnection(){
+    public void checkConnection() {
         try {
-                Connection conn = null;
-    String url = "jdbc:sqlite:batteries.db";
+            Connection conn = null;
+            String url = "jdbc:sqlite:batteries.db";
             conn = DriverManager.getConnection(url);
-            System.out.println("Connection to SQLite has been established.");
+            Statement stmt = conn.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS batteries ( id integer PRIMARY KEY, companyName TEXT NOT NULL, batteryType TEXT NOT NULL, batteryVolt FLOAT NOT NULL, batteryAmp FLOAT NOT NULL);";
+            stmt.execute(sql);
         } catch (SQLException ex) {
             Logger.getLogger(mainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        }   
-}
-public void checkConnection(NewBatteryPanel newBatterypanel){
-    
-}
-        
+        }
+    }
+
+    public void showBatteries() {
+        ArrayList<Battery> list = null;
+        try {
+            list = batteries();
+            for (int i = 0; i < list.size(); i++) {
+                jComboBox_BatteryChooser.addItem(list.get(i).getCompanyName() + " " + list.get(i).getBatteryModel());
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(mainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public ArrayList<Battery> batteries() throws Exception {
+        ArrayList<Battery> batteriesList = new ArrayList();
+        try {
+            Statement stmt = null;
+            Connection conn = null;
+            Battery currentBattery = null;
+            String url = "jdbc:sqlite:batteries.db";
+            conn = DriverManager.getConnection(url);
+            String sql = "Select * from batteries";
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                currentBattery = new Battery(rs.getString("companyName"), rs.getString("batteryType"), rs.getFloat("batteryVolt"), rs.getFloat("batteryAmp"));
+                batteriesList.add(currentBattery);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        return batteriesList;
+    }
+
     /**
      * @param args the command line arguments
      */
